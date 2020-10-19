@@ -4,6 +4,7 @@
 * 나는 이 중 UsernamePasswordAuthenticationFilter를 커스터마이징
 * 인증되면 SecurityContextHolder에 등록되고 권한에 따른 요청 필터링 가능
 * ![springsecurity_architecture](https://user-images.githubusercontent.com/38209225/96408521-a581d400-121e-11eb-86ff-c28e0ea1b5dc.png)
+
   1. AuthenticationFilter에서 Authentication 객체에 인증 결과를 만들어 반환해줌
      * Manager는 등록된 Provider들을 돌면서 인증하는데 하나라도 실패하면 인증 안됨
   2. **UsernamePasswordAuthenticationToken** (Authentication의 구현체)
