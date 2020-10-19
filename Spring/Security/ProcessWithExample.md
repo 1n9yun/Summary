@@ -1,8 +1,6 @@
 # Architecture
 
-![springsecurity_architecture](..\..\img\springsecurity_architecture.png)
-
-
+![springsecurity_architecture](https://user-images.githubusercontent.com/38209225/96408521-a581d400-121e-11eb-86ff-c28e0ea1b5dc.png)
 
 * **SecurityContextHolder** 
 
@@ -238,11 +236,11 @@
 
   * 각 네모는 CustomFilter
   
-    ![generate_jwt_flow](../../img/generate_jwt_flow.png)
+    ![generate_jwt_flow](https://user-images.githubusercontent.com/38209225/96408621-d95cf980-121e-11eb-8c7b-4baf8ac95733.png)
 
 * **Validating JWT Flow**
   
-  * ![validating_jwt_flow](../../img/validating_jwt_flow.png)
+  * ![validating_jwt_flow](https://user-images.githubusercontent.com/38209225/96408623-db26bd00-121e-11eb-99cf-3ca4c615ff06.png)
 
 * **RedisConfig**
 

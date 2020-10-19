@@ -8,8 +8,7 @@
 
 > https://jeong-pro.tistory.com/205
 
-![jwt_auth_filter](..\..\img\jwt_auth_filter.png)
-
+![jwt_auth_filter](https://user-images.githubusercontent.com/38209225/96408582-c77b5680-121e-11eb-9889-7bd795e62faa.png)
 
 
 1. 클라이언트로부터의 요청이 오면 AppicationFilter(정의한 필터들) 객체들로 가게 된다.
