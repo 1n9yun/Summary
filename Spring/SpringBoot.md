@@ -5,7 +5,7 @@
 
   * Spring Legacy 
 
-    * 동기화된 상태의 서버. 즉 요청에 대해 기본적으로 화면(html)을 응답하는 형태였으나, Restful서버의 유행으로 비동기 요청에 대해 데이터를 응답하는 기능이 필요해졌음. 그래서 @ResponseBody, @Rescontroller 어노테이션들.
+    * 동기화된 상태의 서버. 즉 요청에 대해 기본적으로 화면(html)을 응답하는 형태였으나, Restful서버의 유행으로 비동기 요청에 대해 데이터를 응답하는 기능이 필요해졌음. 그래서 @ResponseBody, @RestController 어노테이션들.
   * Spring Boot
     
     * 기존 레거시에서 개발자가 해야하는 셋팅. 톰캣 설치부터 시작해서 DB작업에 필요한 DataSource(커넥션 관리) 등 설정을 자동화 시켜 놓음.
