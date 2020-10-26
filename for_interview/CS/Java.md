@@ -4,8 +4,8 @@
 
 ## Garbage Collector
 
-* Young 영역
-* Old 영역
+* 동작 방식에 따라 매우 다양한 종류
+* 공통적으로 힙 내의 객체 중에서 가비지를 찾아낸 후 처리해서 힙의 메모리를 회수
 
 ## Equals, HashCode
 
