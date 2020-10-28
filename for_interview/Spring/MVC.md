@@ -42,5 +42,5 @@
 * (9) ViewResolver
 
   * Controller에서 리턴한 View의 이름을 DispatcherServlet으로부터 넘겨받고, 해당 View를 렌더링한다.
-  * Configuration에서 Prefix, Infix로 /META-INF/views/*.jsp 로 만들어주는 것도 이녀석
+  * Configuration에서 Prefix, Suffix로 /META-INF/views/*.jsp 로 만들어주는 것도 이녀석
   * DispatcherServlet에서는 해당 View화면을 Response한다.

@@ -1,11 +1,4 @@
-# Java
-
-## JVM
-
-## Garbage Collector
-
-* 동작 방식에 따라 매우 다양한 종류
-* 공통적으로 힙 내의 객체 중에서 가비지를 찾아낸 후 처리해서 힙의 메모리를 회수
+# Object & Collections
 
 ## Equals, HashCode
 
@@ -32,7 +25,7 @@
   * 내부에 charSquence가 final로 선언되어 있기 때문에 수정 불가능
   * \+ 연산 시 새로운 String 객체를 만들어 복사한다.
   * 연산에 사용된 두 String은 Garbage가 된다.
-  
+
 * ### StringBuilder
 
   * 버퍼의 남은 공간이 충분하다면 그대로 값을 복사해서 넣어줌
