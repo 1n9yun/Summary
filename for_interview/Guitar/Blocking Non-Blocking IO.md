@@ -33,4 +33,6 @@
 ### non-Blocking IO Web Server
 
 * 요청을 받는 thread는 하나
-* 
+* worker thread pool (tomcat에선 시스템의 코어 수)
+* 요청을 받으면서 동시에 다른 작업도 진행한다.
+* IO가 끝나면 polling 또는 Callback Function 방식으로 작업을 처리한다.
