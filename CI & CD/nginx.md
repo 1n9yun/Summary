@@ -8,5 +8,5 @@
 
 ## Configuration
 
-* `vi /etc/nginx/site-available/default`
+* `vi /etc/nginx/sites-available/default`
 

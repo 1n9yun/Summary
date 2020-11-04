@@ -7,7 +7,8 @@
 * Docker Compose를 이용한 무중단 배포
   * http://jaynewho.com/post/21
 
-
+* docker shell
+* `docker exec -u 0 -it container bash`
 
 ## Install Jenkins
 
