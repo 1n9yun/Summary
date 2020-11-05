@@ -5,10 +5,32 @@
 > https://hiseon.me/linux/ubuntu/install-docker/
 
 * Docker Compose를 이용한 무중단 배포
-  * http://jaynewho.com/post/21
 
+* http://jaynewho.com/post/21
+  
 * docker shell
-* `docker exec -u 0 -it container bash`
+
+  * ```shell
+    docker exec -it container bash
+    ```
+
+
+
+## Docker-Compose
+
+* docker exec -it popo_frontend sh
+
+### Dockerfile
+
+### docker-compose.yml
+
+### Commands
+
+### Volumes
+
+### Networks
+
+
 
 ## Install Jenkins
 
