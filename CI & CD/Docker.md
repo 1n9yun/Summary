@@ -18,7 +18,10 @@
 
 ## Docker-Compose
 
-* docker exec -it popo_frontend sh
+* ```shell
+  docker exec -it popo_frontend sh
+  sudo netstat -plant | grep 8
+  ```
 
 ### Dockerfile
 
