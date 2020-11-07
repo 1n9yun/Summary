@@ -4,6 +4,8 @@
   docker exec <CONTAINER_NAME> cat /var/jenkins_home/secrets/initialAdminPassword
   ```
 
+* /var/lib/jenkins/workspace
+
 * host:8080으로 접속
 
 * 위의 initialAdminPassword로 접속, 권장 플러그인 설치

@@ -31,6 +31,8 @@
 
 ### Volumes
 
+* /var/lib/docker/volumes
+
 ### Networks
 
 

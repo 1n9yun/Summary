@@ -10,6 +10,8 @@
 
 * `vi /etc/nginx/sites-available/default`
 
+* /etc/nginx/conf.d
+
 * example from TK
 
   ```
