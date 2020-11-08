@@ -1,0 +1,50 @@
+version: "3"
+services:
+        popo_mongo:
+                container_name: popo_mongo
+                image: mongo
+                environment:
+                        MONGO_INITDB_ROOT_USERNAME: root
+                        MONGO_INITDB_ROOT_PASSWORD: Jin@hasg0ne!
+                ports:
+                        - 27017:27017
+
+        popo_backend:
+                container_name: popo_backend
+                build: ./backend
+                ports:
+                        - 4000:4000
+                depends_on:
+                        - popo_mongo
+                volumes:
+                        - backend:/backend
+
+        popo_frontend:
+                container_name: popo_frontend
+                build: ./frontend
+                depends_on:
+                        - popo_backend
+                volumes:
+                        - frontend:/frontend
+
+        popo_nginx:
+                container_name: popo_nginx
+                image: staticfloat/nginx-certbot
+                ports:
+                        - 80:80/tcp
+                        - 443:443/tcp
+                environment:
+                        CERTBOT_EMAIL: jig7357@gmail.com
+                volumes:
+                        - ./nginx/conf.d:/etc/nginx/conf.d:ro
+                        - letsencrypt:/etc/letsencrypt
+                        - backend:/backend
+                        - frontend:/frontend
+                depends_on:
+                        - popo_backend
+                        - popo_frontend
+
+volumes:
+        letsencrypt:
+        backend:
+        frontend:
