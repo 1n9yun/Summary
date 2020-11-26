@@ -1,4 +1,4 @@
-## Red-Black Tree
+# Red-Black Tree
 
 * 이진 탐색 트리의 일종
 
@@ -8,14 +8,14 @@
 
 * 삽입되는 노드는 Red
 
-* ### 정의
+* ## 정의
 
   * Root Node는 Black
   * 모든 leaf Node(, NIL)는 Black
   * Red의 자식은 모두 Black
   * 각 노드에서의 Black Height는 같다.
 
-* ### 조건
+* ## 조건
 
   * Double-Red는 용납 못한다.
     * Restructuring O(1)
