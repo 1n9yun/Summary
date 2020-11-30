@@ -9,4 +9,5 @@ public class ExampleTest {
         Assertions.assertEquals(1, 1);
 
     }
+
 }

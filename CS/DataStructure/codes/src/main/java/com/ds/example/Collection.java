@@ -5,16 +5,21 @@ import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/*
+todo:
+    see iterator, spliterator, stream, parallelStream
+ */
 public interface Collection<E> extends Iterable<E>{
-    /*
+    /**
     returns true if this collection changed as a result of the call.
     returns false if this collection does not permit duplicates and already contains the specified element.
-
-    UnsupportedoperationException - if the add operation is not supported by this collection
-    ClassCaseException - if the class of the specified element prevents it from being added to this collection
-    NullPointerException - if the specified element is null and this collection does not permit null elements
-    IllegalArgumentException - if some property of the element prevents it from being added eto this collection
-    IllegalStateException - if the element cannot be added at this time due to insertion restrictions.
+    @param e
+    @return a boolean
+    @throws UnsupportedOperationException if the add operation is not supported by this collection
+    @throws ClassCastException - if the class of the specified element prevents it from being added to this collection
+    @throws NullPointerException - if the specified element is null and this collection does not permit null elements
+    @throws IllegalArgumentException - if some property of the element prevents it from being added eto this collection
+    @throws IllegalStateException - if the element cannot be added at this time due to insertion restrictions.
      */
     boolean add(E e);
     boolean addAll(Collection<? extends E> c);
@@ -30,7 +35,20 @@ public interface Collection<E> extends Iterable<E>{
      */
     boolean contains(Object o);
     boolean containsAll(Collection<?> c);
+
+    /*
+    compares the specified object with this collection for equality
+    List, Set interface를 구현하지 않는 collection은 List, Set을 구현한 Collection과 비교할 때
+    false를 반환해야 한다.
+    See Also :
+        Object.equals(), Set.equals(), List.equals()
+     */
     boolean equals(Object o);
+
+    /*
+    See Also:
+        Object.hashCode(), Object.equals()
+     */
     int hashCode();
     
     /*
@@ -43,6 +61,11 @@ public interface Collection<E> extends Iterable<E>{
     리턴되는 elements들의 순서에 대한 보증이 없다. (이 컬렉션이 보증을 제공하는 일부 클래스의 인스턴스가 아닌 경우.)
      */
     Iterator<E> iterator();
+
+    /*
+    spliterator 메소드가 splitarator를 return할 수 없는 경우에 overridden 되어야 함
+    IMUUTABLE, CONCURRENT or late-binding 인 경우.
+     */
     default Stream<E> parallelStream(){
         return null;
     }
@@ -75,6 +98,11 @@ public interface Collection<E> extends Iterable<E>{
     returns Integer.MAX_VALUE
      */
     int size();
+
+    /*
+    병렬 처리를 위한 iterator interface
+    since 1.8 ~
+     */
     default Spliterator<E> spliterator(){
         return null;
     }
