@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 /*
 todo:
     see iterator, spliterator, stream, parallelStream
+        AbstractCollection
  */
 public interface Collection<E> extends Iterable<E>{
     /**
