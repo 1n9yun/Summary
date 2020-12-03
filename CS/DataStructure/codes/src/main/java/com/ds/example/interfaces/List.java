@@ -1,4 +1,4 @@
-package com.ds.example;
+package com.ds.example.interfaces;
 
 import java.util.Comparator;
 import java.util.Iterator;

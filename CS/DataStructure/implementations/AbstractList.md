@@ -1,7 +1,7 @@
 # AbstractList
 
 * **"Random access" data store에 의해 backed되는 List 인터페이스의 구현의 노력을 덜어주는 skeletal 구현체를 제공한다.**
-  * sequential access(such as linked list)는 AbstractSequentialList를 이 클래스보다 우선적으로 사용해야 한다.
+  * sequential access(such as linked list)는 AbstractSequentialList class를 우선적으로 사용해야 한다.
 * **불변 List의 구현을 위해서는 이 클래스를 상속하고 get(int), size() 메소드의 구현만을 제공해야 한다.**
 * **가변 List의 구현을 위해서는 추가적으로 set(int, E) 메소드를 override해야 한다.**
   * 그렇지 않은 경우 UnsupportedOperationException을 throw해야 한다.

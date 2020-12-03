@@ -1,6 +1,6 @@
-package com.ds.example.implementation;
+package com.ds.example.implementations;
 
-import com.ds.example.Collection;
+import com.ds.example.interfaces.Collection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
