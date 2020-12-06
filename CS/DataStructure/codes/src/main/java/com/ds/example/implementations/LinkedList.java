@@ -18,6 +18,9 @@ public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>,
         this();
         addAll(c);
     }
+
+
+
     private static class Node<E> {
         E item;
         Node<E> next;
