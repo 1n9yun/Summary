@@ -1,6 +1,6 @@
 # Architecture
 
-![springsecurity_architecture](https://user-images.githubusercontent.com/38209225/96408521-a581d400-121e-11eb-86ff-c28e0ea1b5dc.png)
+![springsecurity_architecture](https://chathurangat.files.wordpress.com/2017/08/blog-post-spring-security-basic-authentication-3.png)
 
 * **SecurityContextHolder** 
 
