@@ -55,7 +55,7 @@
 * ### 종류
 
   * L2, L3, L4, L7 - OSI 7 Layer를 기준으로 어떤 것을 나누는지에 따라 다름
-    * L2 - Mac을 기준으로 나눔
+    * L2 - MAC을 기준으로 나눔
     * L3 - IP를 기준으로 나눔
     * L4 - Transport Layer에서 Load Balancing (TCP/UDP)
     * L7 - Application Level

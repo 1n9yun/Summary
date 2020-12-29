@@ -47,13 +47,11 @@
 
   * ###### template
 
-
     * 기본 언어 : html
     * 각 vue 파일은 한번에 최대 하나의 `<template>`블록을 포함할 수 있음
     * 내용은 문자열로 추출되어 컴파일 된 Vue 컴포넌트의 template 옵션으로 사용
 
   * ###### script
-
 
     * 기본 언어 : js
     * 각 vue 파일은 한번에 최대 하나의 `<script>`블록을 포함할 수 있음
@@ -61,14 +59,9 @@
 
   * ###### style
 
-
     * 기본 언어 : css
-
     * 각 vue 파일은 여러 개의 `<style>` 태그를 지원
-
     * scoped 속성을 이용하여 현재 컴포넌트에서만 사용 가능한 css를 지정 가능
-
-
-      * ``` html
+    * ``` html
         <style scoped></style>
         ```
