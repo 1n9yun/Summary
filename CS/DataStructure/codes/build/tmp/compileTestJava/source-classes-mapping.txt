@@ -1,2 +1,0 @@
-com/ds/example/ExampleTest.java
- com.ds.example.ExampleTest
