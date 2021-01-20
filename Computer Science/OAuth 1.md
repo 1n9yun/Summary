@@ -125,3 +125,9 @@ The original community specification는 다른 terminology를 사용했으며 �
 
 
 
+### 1.2 Example
+
+
+
+
+
