@@ -7,6 +7,8 @@
 > Description
 >
 > RFC5849를 읽으며 번/의역했으며 불필요해보이는 정보는 제외했을 수 있으므로 원문도 확인!
+>
+> 또한 서투른 영어 실력으로 번역체와 직독직해가 난무함!
 
 
 
@@ -79,6 +81,47 @@ OAuth는 클라이언트에게 서버 리소스 소유자를 대신하여 서버
 > The use of OAuth with any transport protocol other than [RFC2616] is undefined.
 
 라고도 한다.
+
+
+
+### 1.1 Terminology
+
+**client**
+
+- OAuth-authenticated requests를 할 수 있는 HTTP 클라이언트
+
+**server**
+
+* OAuth-authenticated requests를 수락할 수 있는 HTTP 서버
+
+**protected resource**
+
+* OAuth-authenticated requests를 통해 서버에서 얻을 수 있는 접근 제한 리소스
+
+**resource owner**
+
+* credentials를 사용하여 서버에 인증함으로써 protected resources에 접근하고 제어할 수  있는 Entity 
+
+**credentials**
+
+* shared secret과 매칭되는 고유한 식별자 쌍
+* OAuth는 client, temporary, token의 세 가지 credentials 클래스를 정의한다.
+* 각각 요청을 만드는 클라이언트, 권한부여 요청, 액세스 권한을 식별하고 인증하는데 사용한다.
+
+**token**
+
+* server로부터 발행되는 고유한 식별자이며 client가 인증 요청과 resource owner(client에 의해 인증을 얻거나 인증을 요청받은)를 연관시키기(?) 위해 사용한다.
+
+* 클라이언트가 토큰의 소유권을 설정하는데 사용되는 shared secret과 resource owner를 나타내는 권한을 가지고 있다.
+
+The original community specification는 다른 terminology를 사용했으며 아래와 같이 매칭된다.
+
+* Consumer : client
+* Service Provider: server
+* User: resource owner
+* Comsumer Key and Secret : client credentials
+* Request Token and Secret : temporary credentials
+* Access Token and Secret : token credentials
 
 
 
