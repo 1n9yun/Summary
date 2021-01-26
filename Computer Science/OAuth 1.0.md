@@ -129,5 +129,17 @@ The original community specification는 다른 terminology를 사용했으며 �
 
 
 
+### 1.3 Notational Conventions
 
+> [RFC2119](https://tools.ietf.org/html/rfc2119)
+>
+> **MUST** (Required, Shall) 은 절대적으로 필요한 specification
+>
+> **MUST NOT**(Shall Not) 은 절대적으로 금지되는 specification
+>
+> **SHOULD**(Recommended) 는 특정 상황에서 특정 항목을 무시할 타당한 이유가 있을 수 있지만 다른 방법을 선택하기 전에 전체 의미를 이해하고 신중하게 검토해야 함을 의미
+>
+> **SHOULD NOT**(Not Recommended) 은 특정 동작이 수용가능하거나 심지어 유용할 때 특정 상황에서 타당한 이유가 있을 수 있지만 이 Label로 설명된 모든 행동을 구현하기 이전에 전체 의미를 이하고 신중하게 검토해야 함을 의미
+>
+> **MAY**(Optional) 는 말그대로 옵션인 항목이며 옵션을 포함하지 않는 구현체는 옵션을 포함하는 구현체와의 상호운용을 기능상의 축소가 있더라도 반드시 준비해야 한다. 그 반대의 경우에도 다른 구현과 상호 운용되도록 준비해야 한다. (물론 옵션이 제공하는 기능에 대해서는 제외)
 
