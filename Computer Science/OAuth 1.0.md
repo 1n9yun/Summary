@@ -236,3 +236,59 @@ Content-Type: application/x-www-form-urlencoded
 oauth_token=hdk48Djdsa&oauth_token_secret=xyz4992k83j47x0b&
 oauth_callback_confirmed=true
 ```
+
+## 2.2 Resource Owner Authorization
+
+클라이언트가 서버에 token credentials를 요청하기 전에 요청을 인증하기 위해 사용자를 보내야(?) 한다(MUST)
+
+클라이언트는 아래 REQUIRED 쿼리 파라미터를 리소스 소유자 인증 endpoint URI에 추가함으로써 요청 URI를 생성한다.
+
+```
+oauth_token
+	section 2.1에서 얻은 "oauth_token"파라미터의 값인 임시 자격증명 identifier.
+	서버는 이 파라미터를 OPTIONAL로 설정할 수 있으며(MAY) 이 때 서버는 다른 방법을 	통해 identifier를 나타낼 수 있는 방법을 리소스 소유자에게 제공해야 한다.
+```
+
+서버는 추가적인 파라미터를 지정할 수 있다.(MAY)
+
+클라이언트는 HTTP redirection response를 이용하거나 리소스 소유자의 유저 agent를 통해 가능한 방법으로 구성된 URI로 리소스 소유자를 보낸다. 요청은 HTTP GET 메소드를 사용해야 한다.(MUST)
+
+예를들어 클라이언트는 다음 HTTPS 요청을 수행하기 위해 리소스 소유자의 유저 agent를 redirect한다.
+
+```
+GET /authorize_access?oauth_token=hdk48Djdsa HTTP/1.1
+Host: server.example.com
+```
+
+요청이 TLS/SSL과 같은 보안 채널을 사용하는지를 포함하여 서버가 인증 요청을 다루는 방식에 대해서는 이 스펙의 범위 밖이다. 하지만 서버는 리소스 소유자의 신원을 먼저 파악해야 한다.(MUST)(근데 SSL은 필수라고하지 않았었나??)
+
+> When asking the resource owner to authorize the requested access, the server SHOULD present to the resource owner information about the client requesting access based on the association of the temporary credentials with the client identity.  When displaying any such information, the server SHOULD indicate if the information has been verified.
+>
+> 해석이 좀 어렵다.
+
+리소스 소유자로부터 인증 결과를 받은 다음, 서버는 `oauth_callback` 파라미터나 다른 방법으로 제공받은 경우(?) 리소스 소유자를 callback URI로 리다이렉트한다.
+
+접근을 승인하는 리소스 소유자가 프로세스를 완료하기 위해 클라이언트로 돌아가는 리소스 소유자와 같은지 확인하기 위해서는, 서버는 반드시 verification code를 생성해야 한다 : (프로세스를 완료하기 위해서 필요하며 리소스 소유자를 통해 클라이언트에게 전달된 추측 불가능한 값). 서버는 콜백 URI 쿼리 컴포넌트에 다음 REQUIRED 파라미터를 추가하여 요청 URI를 만든다.
+
+```
+oauth_token
+	클라이언트로부터 받은 임시 자격 증명 identifier
+oauth_verifier
+	verification code
+```
+
+만약 callback URI가 이미 쿼리 컴포넌트에 포함되었다면 서버는 존재하는 쿼리의 끝에 `OAuth parameter`를 추가해야 한다(MUST).
+
+예를 들어, 서버는 리소스 소유자의 user-agent를 다음 HTTP 요청을 만들기 위해 리다이렉트 한다.
+
+```
+GET /cb?x=1&oauth_token=hdk48Djdsa&oauth_verifier=473f82d3 HTTP/1.1
+Host: client.example.net
+```
+
+만약 클라이언트가 callback URI를 제공하지 않는다면, 서버는 verification code를 나타내야 하며(SHOULD), 리소스 소유자에게 클라이언트에게 인증이 완료되었음을 수동으로 알리도록 해야한다.
+
+만약 서버가 클라이언트가 제한된 장치에서 실행되고 있음을 알고 있다면, verifier 값이 수동입력에 적합한지 확인해야 한다(SHOULD).
+
+## 2.3 Token Credentials
+
