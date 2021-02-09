@@ -84,7 +84,7 @@ OAuth는 클라이언트에게 서버 리소스 소유자를 대신하여 서버
 
 
 
-### 1.1 Terminology
+### 1.1. Terminology
 
 **client**
 
@@ -125,11 +125,11 @@ The original community specification는 다른 terminology를 사용했으며 �
 
 
 
-### 1.2 Example
+### 1.2. Example
 
 
 
-### 1.3 Notational Conventions
+### 1.3. Notational Conventions
 
 > [RFC2119](https://tools.ietf.org/html/rfc2119)
 >
@@ -145,7 +145,7 @@ The original community specification는 다른 terminology를 사용했으며 �
 
 
 
-## 2 Redirection-Based Authorization
+## 2. Redirection-Based Authorization
 
 OAuth는 리소스 소유자가 클라이언트에게 부여한 권한을 나타내는 토큰을 사용한다.
 
@@ -182,7 +182,7 @@ HTTP Redirection과 리소스 소유자의 user-agent를 이용한 방법이다.
 
 게다가 프로토콜 파라미터는 전송할 때 필요한 인코딩이 필요한 값을 포함할 수 있다. 클라이언트와 서버는 값의 가능한 범위에 대한 가정을 피해야 한다.
 
-### 2.1 Temporary Credentials
+### 2.1. Temporary Credentials
 
 클라이언트는 Temporary Credentials Request Endpoint로 인증된 POST 요청을 보냄으로써 서버로부터 임시 자격증명셋을 얻는다.
 
@@ -198,7 +198,7 @@ HTTP Redirection과 리소스 소유자의 user-agent를 이용한 방법이다.
 
 요청의 응답으로 평문 credential이 전송되기 때문에 서버는 TLS나 Secure Socket Layer(SSL)과 같은 전송 계층 메커니즘(또는 그와 동등한 보안 채널)을 필요로 한다.(MUST)
 
-#### 2.1.1 Example
+#### 2.1.1. Example
 
 클라이언트는 아래와 같은 HTTPS 요청을 만든다.
 
@@ -237,7 +237,7 @@ oauth_token=hdk48Djdsa&oauth_token_secret=xyz4992k83j47x0b&
 oauth_callback_confirmed=true
 ```
 
-## 2.2 Resource Owner Authorization
+### 2.2. Resource Owner Authorization
 
 클라이언트가 서버에 token credentials를 요청하기 전에 요청을 인증하기 위해 사용자를 보내야(?) 한다(MUST)
 
@@ -290,5 +290,58 @@ Host: client.example.net
 
 만약 서버가 클라이언트가 제한된 장치에서 실행되고 있음을 알고 있다면, verifier 값이 수동입력에 적합한지 확인해야 한다(SHOULD).
 
-## 2.3 Token Credentials
+### 2.3. Token Credentials
 
+클라이언트는 인증된(Section 3) HTTP POST 요청을 토큰 요청 endpoint에 요청함으로써(서버가 클라이언트가 사용할 다른 HTTP 요청 방법을 알리지 않는 한) 서버로부터 token credentials을 얻는다. 
+
+클라이언트는 다음의 REQUIRED 파라미터를 요청에 추가함으로써 요청 URI를 생성한다.
+
+```
+oauth_verifier
+	이전 스텝에서 서버로부터 받은 verification code
+```
+
+요청을 생성할 때, 클라이언트는 client credentials,, temporary credentials를 사용하여 인증한다. temporary credentials는 전송된 인증 요청에서 token credentials의 대체용으로 사용되며 `oauth_token` 파라미터에 사용한다.
+
+요청의 응답으로 평문 credentials가 전송되기 때문에 서버는 TLS 또는 SSL(또는 동등한 보안 채널)과 같은 전송 계층 mechanism 을 사용해야 한다.(MUST)
+
+예를 들어, 클라이언트는 다음의 HTTPS 요청을 만든다.
+
+```
+POST /request_token HTTP/1.1
+Host: server.example.com
+Authorization: OAuth realm="Example",
+	oauth_consumer_key="jd83jd92dhsh93js",
+	oauth_token="hdk48Djdsa",
+	oauth_signature_method="PLAINTEXT",
+	oauth_verifier="473f82d3",
+	oauth_signature="ja893SD9%26xyz4992k83j47x0b"
+```
+
+서버는 요청의 유효성을 검증(Section 3.2)해야 하며(MUST) 리소스 소유자가 클라이언트에 대한 token credentials의 provisioning을 승인했는지, temporary credentials가 이전에 사용되었거나 만료되진 않았는지 확인해야 한다.
+
+서버는 또한 클라이언트로부터 받은 verification code를 검증해야 한다.(MUST) 만약 요청이 유효하고 인증되었다면 token credentials는 200 code와 함께 `application/x-www-form-urlencoded` 컨텐츠 타입(defined by [W3C.REC-html40-11980424](https://tools.ietf.org/html/rfc5849#ref-W3C.REC-html40-19980424))를 사용하여 포함된다.
+
+응답은 다음의 REQUIRED 파라미터를 포함한다.
+
+```
+oauth_token
+	토큰 식별자
+oauth_token_secret
+	토큰 shared-secret
+```
+
+for example,
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/x-www-form-urlencoded
+
+oauth_token=j49ddk933skd9dks&oauth_token_secret=ll399dj47dskfjdk
+```
+
+서버는 리소스 소유자에 의해 승인된 scope, duration, 다른 속성들을 유지해야하며 발급된 token credentials로 클라이언트로부터 요청을 받을 때 이러한 제한을 적용해야 한다.
+
+클라이언트가 token credentials를 받고, 저장하면 클라이언트는 token credentials과 함께 client credentials를 사용하여 인증된 요청(Section 3)을 만들어 리소스 소유자 대신 보호된 리소스에 액세스할 수 있다.
+
+## 3. Authenticated Requests
