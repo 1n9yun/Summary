@@ -345,3 +345,83 @@ oauth_token=j49ddk933skd9dks&oauth_token_secret=ll399dj47dskfjdk
 클라이언트가 token credentials를 받고, 저장하면 클라이언트는 token credentials과 함께 client credentials를 사용하여 인증된 요청(Section 3)을 만들어 리소스 소유자 대신 보호된 리소스에 액세스할 수 있다.
 
 ## 3. Authenticated Requests
+
+HTTP 인증 메소드([RFC2617](https://tools.ietf.org/html/rfc2617)에 정의된)는 클라이언트가 HTTP 인증 요청을 만드는 것을 가능하게 한다. 클라이언트는 이런 메소드들을 이용하여 그들의 credentials(일반적으로 username, password 쌍이며 서버가 그 진위를 확인할 수 있음)를 사용함으로써 보호된 리소스에 접근을 얻는다. 이러한 delegation을 위한 방법을 사용하는 것은 클라이언트가 리소스 소유자의 역할을 한다고 가정하는 것이 필요하다.
+
+OAuth는 각 요청에 두 셋의 credentials(하나는 클라이언트를 식별, 다른 하나는 리소스 소유자를 식별)를 포함하도록 디자인된 메소드를 제공한다. 클라이언트가 리소스 소유자를 대신하여 인증된 요청을 할 수 있으려면, 리소스 소유자에 의해 인증된 토큰을 얻어야 한다. Section 2는 클라이언트가 리소스 소유자에 의해 인증된 토큰을 얻는 한 가지 방법을 제공한다.
+
+클라이언트 credentials는 고유 식별자와 관련 shared-secret 또는 RSA키 쌍의 형식을 취한다. 인증된 요청을 하기 전에, 클라이언트는 server와 함께 credentials set를 설정한다. 이런 것들을 프로비저닝하기 위한 과정과 요구사항은 이 spec 범위 밖이다. 구현자는 client credentials를 사용하는 것이 보안에 미치는 영향을 고려해야 하며 그 중 일부는 Section 4.6에 기술되어 있다.
+
+인증된 요청을 하는 것은 서버 설정의 사전 지식이 필요하다. OAuth는 요청(Section 3.5)과 함께 프로토콜 파라미터를 전송하는 복수의 방법과 클라이언트가 사용된 credentials의 정당한 소유권(Section 3.4)을 증명할 여러가지 방법을 포함한다. 클라이언트가 필요한 설정을 알아내는 방법은 이 spec 범위 밖이다.
+
+### 3.1 Making Requests
+
+인증된 요청은 몇몇 프로토콜 파라미터를 포함한다. 각 파라미터 이름은 `oauth_` 접두어로 시작하며 파라미터 이름과 값은 대소문자를 구분한다(case sensitive). 클라이언트는 프로토콜 파라미터셋의 값을 계산하고 다음과 같이 http요청에 추가함으로써 인증된 요청을 한다.
+
+1. 클라이언트는 다음과 같은 REQUIRED(달리 명시하지 않는 한) 프로토콜 파라미터를 지정한다.
+  * `oauth_consumer_key`
+    * 클라이언트 credentials(username과 동등한)의 식별자 일부.
+    * 파라미터 이름은 이전 개정에서 사용된 더이상 사용되지 않는 용어를 이전 버전과의 호환성을 위해 반영하였음.
+  * `oauth_token`
+    * 리소스 소유자와 요청을 연결시키는데 사용되는 토큰 값.
+    * 만약 요청이 리소스 소유자와 연결되지 않는다면(토큰이 사용 불가), 클라이언트는 파라미터를 생략할 수 있다.(MAY)
+  * `oauth_signature_method`
+    * 클라이언트가 요청을 서명하기 위해 Section 3.4에 정의된 서명 메소드의 이름.
+  * `oauth_timestamp`
+    * Section 3.3에 정의된 timestamp값.
+    * 이 파라미터는 `PLAINTEXT` 서명 메소드를 사용할 때에는 생략될 수 있다.(MAY)
+  * `oauth_nonce`
+    * Section 3.3에서 정의된 nonce value.
+    * 이 파라미터는 `PLAINTEXT` 서명 메소드를 사용할 때에는 생략될 수 있다.(MAY)
+2. 프로토콜 파라미터는 Section 3.5에 있는 전송 방법 리스트중 하나를 사용하여 요청에 추가된다. 각 파라미터는 각 요청당 두 번 이상 나타나면 안된다(MUST NOT).
+3. 클라이언트는 Section 3.4에 기술된 `oauth_signature` 파라미터의 값을 계산하고 서명하며 이전 스텝에서와 같은 메소드를 사용하여 요청에 파라미터를 추가한다.
+4. 클라이언트는 인증된 HTTP 요청을 서버에 보낸다.
+
+예를 들어, 다음과 같은 인증된 HTTP 요청을 보낸다.(`c2&a3=2+q` 문자열은 form-encoded entity-body의 영향을 설명하기 위해 사용되었다.)
+
+```
+POST /request?b5=%3D%253D&a3=a&c%40=&a2=r%20b HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+
+c2&a3=2+q
+```
+
+클라이언트는 client credentials, token credentials, 현재 timestamp, 고유생성 nonce를 이용하여 다음 프로토콜 파라미터로 값을 서명하고 `HMAC-SHA1`서명 메소드를 사용할 것이라고 표시한다.
+
+```
+oauth_consumer_key:     9djdj82h48djs9d2
+oauth_token:            kkk9d7dh3k39sjv7
+oauth_signature_method: HMAC-SHA1
+oauth_timestamp:        137131201
+oauth_nonce:            7d8f3e4a
+```
+
+클라이언트는 프로토콜 파라미터를 OAuth HTTP `Authorization` 헤더 필드를 사용하여 추가한다.
+
+```
+Authorization: OAuth realm="Example",
+			  oauth_consumer_key="9djdj82h48djs9d2",
+               oauth_token="kkk9d7dh3k39sjv7",
+               oauth_signature_method="HMAC-SHA1",
+               oauth_timestamp="137131201",
+               oauth_nonce="7d8f3e4a"
+```
+
+그 다음 클라이언트는 `oauth_signature`값을 계산하고(client secret `j49sk3j29djd`, token secret `dh893hdasih9`를 사용하여) 요청에 추가한 다음 서버에 이 HTTP 요청을 보낸다.
+
+```
+POST /request?b5=%3D%253D&a3=a&c%40=&a2=r%20b HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: OAuth realm="Example",
+			  oauth_consumer_key="9djdj82h48djs9d2",
+               oauth_token="kkk9d7dh3k39sjv7",
+               oauth_signature_method="HMAC-SHA1",
+               oauth_timestamp="137131201",
+               oauth_nonce="7d8f3e4a",
+               oauth_signature="bYT5CMsGcbgUdFHObYMEfcx6bsw%3D"
+               
+c2&a3=2+q
+```
+
