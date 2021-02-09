@@ -425,3 +425,22 @@ Authorization: OAuth realm="Example",
 c2&a3=2+q
 ```
 
+### 3.2 Verifying Requests
+
+서버는 다음 과정과 같이 받은 인증된 요청을 검사해야 한다.(MUST)
+
+* 요청 signature를 독립적으로 다시 계산하고(Section 3.4) `oauth_signature`파라미터를 통해 클라이언트로부터 전달된 값과 비교한다.
+* 만약 `HMAC-SHA1` 또는 `RSA-SHA1` 서명 메소드를 사용한다면 이전 요청에서 사용되지 않은, 클라이언트로부터 전달된 nonce/timestamp/token(존재한다면)의 조합을 확인해야 한다.(서버는 stale한 timestamp(Section 3.3)의 요청을 거절할 수 있다(MAY))
+* 만약 토큰이 존재한다면, 토큰으로 표시되는 클라이언트의 권한 상태와 scope를 검사
+* 만약 `oauth_version` 파라미터가 있다면 그 값이 1.0인지 확인
+
+만약 요청이 verification에 실패하면, 서버는 적절한 HTTP 응답 코드로 응답해야 한다.(SHOULD). 서버는 왜 요청이 거절되었는지 detail을 응답 바디에 포함할 수 있다.(MAY)
+
+미지원 파라미터, 미지원 서명 메소드, 누락된 파라미터, 중복된 프로토콜 파라미터를 포함하는 요청을 받으면 서버는 400(bad request) 상태 코드를 리턴해야 한다(SHOULD). 
+
+유효하지 않은 client credentials, 유효하지 않거나 만료된 토큰, 유효하지 않은 signature, 유효하지 않거나 사용된 nonce를 포함하는 요청을 받으면 서버는 401(unauthorized) 상태 코드를 리턴해야 한다.
+
+### 3.3 Nonce and Timestamp
+
+
+
