@@ -442,5 +442,102 @@ c2&a3=2+q
 
 ### 3.3 Nonce and Timestamp
 
+timestamp 값은 양의 정수 값이어야 한다(MUST). 서버에서 따로 지정하지 않은 한 timestamp는 1970년 1월 1일 00시 00분 00초로 부터의 초 단위로 표현된다.
+
+nonce는 클라이언트가 고유하게 생성한 랜덤 문자열이며 서버가 요청이 이전에 만들어진 적이 없음을 확인하고 요청이 non-secure 채널에서 만들어졌을 때 반복 공격을 방지하는데 도움을 준다. nonce 값은 같은 timestamp, client credentials, token conbinations의 모든 요청들 사이에서 고유해야 한다(MUST).
+
+향후 검사를 위해 무한한 수의 nonce 값을 유지하는 것을 피하기 위해 이전의 timestamp를 가진 요청이 거절되는 기간을 제한할 수 있다(MAY). 이 제한은 클라이언트 시간과 서버 시간의 동기화 레벨을 의미. 이러한 제한을 적용하는 서버는 클라이언트가 서버 시간과 동기화할 방법을 제공할 수 있다(MAY).; 대안으로, 두 system은 믿을만한 time service와 동기화할 수 있다. (clock 동기화 전략은 이 스펙의 범위를 벗어난다.)
+
+### 3-4 Signature
+
+OAuth 인증된 요청은 `oauth_consumer_key`, `oauth_token` 파라미터를 통해 전달되는 두 credentials 셋을 가질 수 있다. 서버가 요청의 authenticity를 확인하고 권한이 없는 접근을 막기 위해서, 클라이언트는 credentials의 정당한 소유자임을 증명할 필요가 있다. 이때는 각 credentials의 shared-secret(or RSA key)을 사용하여 해결할 수 있다.
+
+OAuth는 클라이언트가 정당한 소유자임을 증명하도록 세 가지 방법을 제공한다. : `HMAC-SHA1`, `RSA-SHA1`, `PLAINTEXT`. 비록 `PLAINTEXT`는 서명를 포함하고 있지 않지만 이런 메소드들은 일반적으로 서명 메소드라고 한다. 게다가 `RSA-SHA1`은 client credentials와 관련된 shared-secret 대신 RSA key를 활용한다.
+
+각 구현은 그것 만의 고유한 요구사항을 가질 수 있으므로  OAuth는 특정 서명 메소드를 요구하지 않는다. 서버는 그들의 커스텀 메소드를 구현하고 문서화하는데 자유롭다. (어떤 특정 서명 메소드를 추천하는 것은 이 스펙의 범위 밖). 구현자는 지원할 방법을 정하기 전에 Security Consideration Section(Section 4)을 참고해야 한다.
+
+클라이언트는`oauth_signature_mathod`파라미터를 통해 사용될 서명 메소드를 선언한다. 그리고 클라이언트는 서명(또는 동등한 값의 문자열)을 생성하고 `oauth_signature`파라미터에 포함한다. 서버는 지정된 메소드로 서명을 확인한다.
+
+서명 과정은 요청이나 요청의 파라미터를 바꾸지 않는다 (`oauth_signature`파라미터를 제외하고).
+
+
+
+#### 3.4.1. Signature Base String
+
+signature base string은 HTTP 요청 요소 각각을 하나의 문자열로 일관되고 재현 가능한 연결이다. 그 문자열은 `HMAC-SHA1`, `RSA-SHA1` 서명 메소드의 입력으로 사용된다.
+
+signature base string은 HTTP 요청에 다음과 같은 구성 요소들을 포함한다.
+
+* HTTP 요청 메소드(`GET`, `POST`, etc..)
+* HTTP `Host` 요청 헤더 필드에서 정의된 권한
+* 요청 리소스 URI의 경로와 쿼리 구성 요소
+* `oauth_signature`를 제외한 프로토콜 파라미터
+* Section 3.4.1.3.에 정의된 엄격한 제한을 준수하는 경우 요청 entity-body에 포함된 파라미터
+
+signature base string은 전체 HTTP 요청을 포함하지 않는다. 특히 대부분의 요청에 있는 entity-body를 포함하지 않으며 대부분의 HTTP entity-headers도 포함하지 않는다. 서버는 `SSL`/`TLS` 또는 다른 방법들과 같은 추가적인 보안을 사용하지 않고는 제외된 요청 구성요소들의 신뢰성을 확인할 수 없는 것에 주의해야 한다.
+
+##### 3.4.1.1. String Construction
+
+signature base string은 다음의 HTTP 요청 요소들을 순서대로 연결함으로써 생성된다.
+
+1. HTTP 요청 메소드의 uppercase (커스텀 HTTP method를 사용한다면 인코딩되어야 한다(MUST, Section 3.6).)
+2. `&`문자 (ASCII 38)
+3. 인코딩된(Section 3.6) 기본 URI 문자열(Section 3.4.1.2)
+4. `&`문자 (ASCII 38)
+5. 인코딩된 후(Section 3.6) Section 3.4.1.3.2에서 정규화된 요청 파라미터
+
+예를 들어, 다음의 HTTP 요청은
+
+```
+POST /request?b5=%3D%253D&a3=a&c%40=&a2=r%20b HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: OAuth realm="Example",
+	oauth_consumer_key="9djdj82h48djs9d2",
+	oauth_token="kkk9d7dh3k39sjv7",
+	oauth_signature_method="HMAC-SHA1",
+	oauth_timestamp="137131201",
+	oauth_nonce="7d8f3e4a",
+	oauth_signature="bYT5CMsGcbgUdFHObYMEfcx6bsw%3D"
+
+c2&a3=2+q
+```
+
+아래의 signature base string과 같이 표현된다.
+
+`POST&http%3A%2F%2Fexample.com%2Frequest&a2%3Dr%2520b%26a3%3D2%2520q%26a3%3Da%26b5%3D%253D%25253D%26c%2540%3D%26c2%3D%26oauth_consumer_key%3D9djdj82h48djs9d2%26oauth_nonce%3D7d8f3e4a%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D137131201%26oauth_token%3Dkkk9d7dh3k39sjv7`
+
+##### 3.4.1.2. Base String URI
+
+scheme, 권한, 요청 리소스 URI [RFC3986]의 경로는 다음과 같이 요청 리소스를 표현하는 `http`, `https`URI를 구성하여 포함된다.
+
+1. scheme과 host는 lowercase여야 한다(MUST).
+2. host와 포트 값은 HTTP 요청의 `Host` 헤더 필드의 내용과 같아야 한다(MUST).
+3. 포트는 scheme에 대한 기본 포트가 아닌 경우 포함되어야 한다(MUST). 또한 기본 포트일 경우 제외되어야 한다(MUST). 특히, 포트는 HTTP 요청[RFC2616]이 80포트로 만들어지거나, HTTPS 요청[RFC2818]이 443포트로 만들어질 때 제외되어야 한다(MUST). 모든 다른 기본 포트가 아닌 경우 포함되어야 한다(MUST).
+
+예를 들어, HTTP 요청
+
+```
+GET /r%20v/X?id=123 HTTP/1.1
+Host: EXAMPLE.COM:80
+```
+
+은 base string URI : `http://example.com/r%20v/X`로 표현된다.
+
+다른 예시로, HTTPS 요청
+
+```
+GET /?q=1 HTTP/1.1
+Host: www.example.net:8080
+```
+
+은 base string URI `https://www.example.net:8080/`로 표현된다.
+
+##### 3.4.1.3. Request Parameters
+
+요청 파라미터의 일관되고 재현 가능한 표현을 보장하기 위해 파라미터가 수집되고 원래 디코딩 된 형식으로 디코딩된다. 그런 다음 원래 인코딩 방식이나 다른 특정 방식으로 정렬 및 인코딩되고 단일 문자열로 연결된다.
+
+###### 3.4.1.3.1. Parameter Sources
+
 
 
