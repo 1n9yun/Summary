@@ -539,5 +539,132 @@ Host: www.example.net:8080
 
 ###### 3.4.1.3.1. Parameter Sources
 
+다음 소스들의 파라미터는 하나의 name/value 쌍의 리스트로 모아진다.
+
+* HTTP요청 URI의 쿼리 구성요소는 [RFC 3986], Section 3.4에 정의된다. 쿼리 구성요소는 "application/x-www-form-urlencoded" 문자열로 취급하여 names와 values를 나누고 [W3C.REC-html40-19980424], Section 17.13.4에 정의된 대로 디코딩하여  name/value 쌍들의 리스트로 파싱된다. 
+* OAuth HTTP "Authorization" 헤더 필드(Section 3.5.1)이 존재한다면, 헤더의 내용은 "realm" 파라미터가 있다면 제외하고 name/value 쌍의 리스트로 파싱된다. 파라미터 값은 Section 3.5.1에 정의된 대로 디코딩된다.
+* HTTP 요청의 entity-body.(다음 조건들을 모두 만족하는 경우에만 해당)
+  * entity-body is single-part
+  * entity-body은 [W3C.REC-html40-19980424]에 정의된 "application/x-www-urlencoded" content-type 의 인코딩 요구사항을 따른다.
+  * HTTP 요청 entity-header는 "application/x-www-form-urlencoded"로 설정된 Content-Type" 헤더 필드를 포함한다.
+  * entity-body는 [W3C.REC-html40-19980424], Section 17.13.4에서 정의된 대로 디코딩된 name/value 쌍의 리스트로 파싱된다.
+
+예를들어, HTTP 요청:
+
+```
+POST /request?b5=%3D%253D&a3=a&c%40=&a2=r%20b HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Authorization: OAuth realm="Example",
+	oauth_consumer_key="9djdj82h48djs9d2",
+    oauth_token="kkk9d7dh3k39sjv7",
+    oauth_signature_method="HMAC-SHA1",
+    oauth_timestamp="137131201",
+    oauth_nonce="7d8f3e4a",
+    oauth_signature="djosJKDKJSD8743243%2Fjdk33klY%3D"
+
+c2&a3=2+q
+```
+
+은 다음(전부 디코딩된) 파라미터(서명 기반 sting?)들을 포함한다.
+
+|          Name          |      Value       |
+| :--------------------: | :--------------: |
+|           b5           |       =%3D       |
+|           a3           |        a         |
+|           c@           |                  |
+|           a2           |       r b        |
+|   oauth_consumer_key   | 9djdj82h48djs9d2 |
+|      oauth_token       | kkk9d7dh3k39sjv7 |
+| oauth_signature_method |    HMAC-SHA1     |
+|    oauth_timestamp     |    137131201     |
+|      oauth_nonce       |     7d8f3e4a     |
+|           c2           |                  |
+|           a3           |       2 q        |
+
+"b5"의 값이 "=="가 아닌 "=%3D" 이며 "c@"와 "c2"가 빈 값이라는것에 주의. 서명 기반 문자열을 제공하기 위한 목적으로 이 스펙에 정의된 인코딩 룰은 인코딩된 공백 문자를 표현하기 위한 "+" 문자의 사용을 제외하지만, 이 practice는 "application/x-www-form-urlencoded"로 인코딩 된 값에서 광범위하게 사용되며 "a3" 파라미터 인스턴스 중 하나에 의해 입증된 대로 적절하게 디코딩되어야 한다(MUST).("a3" 파라미터는 이 요청에서 두 번 사용되었다.)
+
+###### 3.4.1.3.2. Parameters Normalization
+
+Section 3.4.1.3에서 모아진 파라미터들은 다음의 하나의 문자열로 정규화된다.
+
+1. 각 파라미터의 name, value가 인코딩된다.(Section 3.6)
+2. 파라미터들은 오름차순 바이트 값 순서로 name으로 정렬된다. 만약 둘 또는 그 이상의 파라미터가 같은 name을 공유한다면 그들의 value로 정렬된다.
+3. 각 파라미터의 이름은 그에 상응하는 value가 구분자로 "=" 문자를 사용하여 연결된다. (value가 비었더라도)
+4. 정렬된 name/value 쌍들은 함께 구분자로 "&" 문자를 사용하여 하나의 문자열로 연결된다.
+
+예를 들어,이전 section에서의 파라미터 리스트는 다음과 같이 정규화되고 :
+
+|          Name          |      Value       |
+| :--------------------: | :--------------: |
+|           b5           |     %3D%253D     |
+|           a3           |        a         |
+|          c%40          |                  |
+|           a2           |      r%20b       |
+|   oauth_consumer_key   | 9djdj82h48djs9d2 |
+|      oauth_token       | kkk9d7dh3k39sjv7 |
+| oauth_signature_method |    HMAC-SHA1     |
+|    oauth_timestamp     |    137131201     |
+|      oauth_nonce       |     7d8f3e4a     |
+|           c2           |                  |
+|           a3           |      2%20q       |
+
+Sorted:
+|          Name          |      Value       |
+| :--------------------: | :--------------: |
+|           a2           |      r%20b       |
+|           a3           |      2%20q       |
+|           a3           |        a         |
+|           b5           |     %3D%253D     |
+|          c%40          |                  |
+|           c2           |                  |
+|   oauth_consumer_key   | 9djdj82h48djs9d2 |
+|      oauth_nonce       |     7d8f3e4a     |
+| oauth_signature_method |    HMAC-SHA1     |
+|    oauth_timestamp     |    137131201     |
+|      oauth_token       | kkk9d7dh3k39sjv7 |
+
+Concatenated Pairs:
+|             Name=Value              |
+| :---------------------------------: |
+|              a2=r%20b               |
+|              a3=2%20q               |
+|                a3=a                 |
+|             b5=%3D%253D             |
+|                c%40=                |
+|                 c2=                 |
+| oauth_consumer_key=9djdj82h48djs9d2 |
+|        oauth_nonce=7d8f3e4a         |
+|  oauth_signature_method=HMAC-SHA1   |
+|      oauth_timestamp=137131201      |
+|    oauth_token=kkk9d7dh3k39sjv7     |
+
+하나의 문자열로 연결된다.
+
+```
+a2=r%20b&a3=2%20q&a3=a&b5=%3D%253D&c%40=&c2=&oauth_consumer_key=9djdj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1&oauth_timestamp=137131201&oauth_token=kkk9d7dh3k39sjv7
+```
 
 
+
+#### 3.4.2. HMAC-SHA1
+
+"HMAC-SHA1" 서명 미소드는 [RFC2104]에 정의된 HMAC-SHA1 서명 알고리즘을 사용한다 :
+
+`digest = HMAC-SHA1 (key, text)`
+
+HMAC-SHA1 함수 변수는 다음과 같은 방법으로 사용된다.
+
+`text`는 Section 3.4.1.1에서 서명 기반 문자열의 값으로 설정된다.
+
+`key`는 다음 값들의 연결로 설정된다.
+
+1. (Section 3.6)에서 인코딩 된 후의 client shared-secret
+2. "&" 문자는 secret이 비어있어도 포함되어야 한다. (MUST)
+3. (Section 3.6)에서 인코딩 된 후의 token shared-secret
+
+결과 octet 문자열이 [RFC2045], Section 6.8.에 의해 base64로 인코딩된 후에 `digest`는 "oauth_signature" 프로토콜 파라미터의 값을 설정하는데 사용된다.
+
+#### 3.4.3. RSA-SHA1
+
+"RSA-SHA1" 서명 메소드는  [RFC3447], Section 8.2(PKCS#1)에 정의된 `RSASSA-PKCS1-v1_5` 서명 알고리즘을 사용하며 `EMSA-PKCS1-v1_5`를 위한 해시 함수로 SHA-1를 사용한다.
