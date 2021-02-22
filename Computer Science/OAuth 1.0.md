@@ -727,5 +727,55 @@ WWW-Authenticate: OAuth realm="http://server.example.com"
 
 realm 파라미터는 [RFC2617] Section 1.2에 따라 보안 realm을 정의한다.
 
+
+
 #### 3.5.2. Form-Encoded Body
+
+프로토콜 파라미터는 HTTP 요청 entity-body로 전송될 수 있다. 그러나 다음의 REQUIRED 조선을 만족하는 경우에만 :
+
+* entity-body는 single-part
+* entity-body는 [W3C.REC-html40-19980424]에 정의된 "application/x-www-form-urlencoded" content-type의 인코딩 요구사항을 따른다.
+* HTTP 요청 entity-header는 "application/x-www-form-urlencoded"로 설정된 "Content-Type" 헤더 필드를 포함한다.
+
+예시
+
+```
+oauth_consumer_key=0685bd9184jfhq22&oauth_token=ad180jjd733klru7&oauth_signature_method=HMAC-SHA1&oauth_signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&oauth_timestamp=137131200&oauth_nonce=4572616e48616d6d65724c61686176&oauth_version=1.0
+```
+
+enitity-body는 다른 요청 특정 파라미터를 포함할 수 있다. 이 경우 프로토콜 파라미터는 &문자로 적절히 분리된 요청 특정 파라미터 다음에 추가되어야 한다(SHOULD).
+
+
+
+#### 3.5.3. Request URI Query
+
+프로토콜 파라미터는 [RFC3986], Section 3에 정의된 대로의 쿼리 파라미터로써 HTTP 요청 URI를 추가함으로써 전송될 수 있다.
+
+예시
+
+```
+GET /example/path?oauth_consumer_key=0685bd9184jfhq22&oauth_token=ad180jjd733klru7&oauth_signature_method=HMAC-SHA1&oauth_signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&oauth_timestamp=137131200&oauth_nonce=4572616e48616d6d65724c61686176&oauth_version=1.0 HTTP/1.1
+```
+
+요청 URI는 다른 요청 특정 쿼리 파라미터를 포함할수 있으며 이 경우 프로토콜 파라미터는 & 문자로 적절하게 분리되어 요청 특정 파라미터의 뒤에 추가되어야 한다(SHOULD).
+
+
+
+### 3.6. Percent Encoding
+
+기존 percent-encoding 메소드들은 서명 기반 문자열의 일관된 구조를 보증하지 않는다. 다음 percent-encoding 메소드는 [RFC3986]과 [W3C.REC-html40-19980424]에 정의된 기존 인코딩 메소드들을 대체하기 위해 정의되지 않았으며 오직 서명 기반 문자열과 "Authorization" 헤더 필드의 구성에서만 사용된다.
+
+이 스펙은 다음 percent-encoding 문자열들을 정의한다.
+
+1. 텍스트 값은 [RFC3629]에 따라 UTF-8 옥텟이 아닌 경우 먼저 인코딩 된다. 이것은 사람이 사용하지 않을 binary 값을 포함하지 않는다. 
+2. 그 값은 다음 [RFC3986] percent-encoding(%XX) 메커니즘을 사용하여 이스케이프 된다.
+   * [RFC3986], Section 2.3에 정의된 예약되지 않은 문자 집합의 문자들은 인코딩되지 않아야 한다.
+   * 모든 다른 문자들은 인코딩되어야 한다.
+   * 인코딩된 문자들을 표현하는 두 16진 문자들은 uppercase여야 한다(MUST).
+
+이 메소드는 "application/x-www-form-urlencoded" content-type(예를 들면, 공백 문자를 "+" 문자 대신 "%20"으로 인코딩한다.)에서 사용되는 인코딩 체계와는 다르며 웹 개발 프레임워크(다른 문자들로 인코딩하거나, lowercase 16진 문자들을 사용하거나..)에서 제공되는 percent-encoding 함수와는 다를 수 있다.
+
+
+
+## 4. Security Considerations
 
