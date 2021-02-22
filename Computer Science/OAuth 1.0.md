@@ -667,4 +667,65 @@ HMAC-SHA1 함수 변수는 다음과 같은 방법으로 사용된다.
 
 #### 3.4.3. RSA-SHA1
 
-"RSA-SHA1" 서명 메소드는  [RFC3447], Section 8.2(PKCS#1)에 정의된 `RSASSA-PKCS1-v1_5` 서명 알고리즘을 사용하며 `EMSA-PKCS1-v1_5`를 위한 해시 함수로 SHA-1를 사용한다.
+"RSA-SHA1" 서명 메소드는  [RFC3447], Section 8.2(PKCS#1)에 정의된 `RSASSA-PKCS1-v1_5` 서명 알고리즘을 사용하며 `EMSA-PKCS1-v1_5`를 위한 해시 함수로 SHA-1를 사용한다. 이 메소드를 사용하기 위해서, 클라이언트는 RSA 공개키가 있는 서버에 client credentials를 설정해야 한다.(그 방법은 스펙의 범위 밖)
+
+서명 기반 문자열은 클라이언트의 RSA 개인키([RFC3447], Section 8.2.1.)를 사용하여 서명된다. ............................................................................................... 생략
+
+#### 3.4.4. PLAINTEXT
+
+"PLAINTEXT" 메소드는 서명 알고리즘을 사용하지 않으며 TLS나 SSL(또는 그와 동등한 수준의 보안 채널)과 같은 전송 계층 메커니즘과 함께 사용되어야 한다(MUST). 또한 서명 기반 문자열 또는 "oauth_timestamp"와 "oauth_nonce"파라미터를 사용하지 않는다.
+
+"oauth_sognature" 프로토콜 파라미터는 다음 값들의 연결로 설정된다.
+
+1. Section 3.6에서 인코딩된 후의 client shared-secret
+2. secret이 비어있어도 포함되어야 하는 & 문자
+3. Section 3.6에서 인코딩된 후의 token shared-secret
+
+
+
+### 3.5. Parameter Transmission
+
+OAuth 인증 요청을 만들 때, 프로토콜 파라미터와 "oauth_" 접두사가 포함되는 다른 파라미터는 선호도가 감소하는 순으로 나열된 다음 위치중 오직 하나를 사용하여 요청에 포함되어야 한다.(SHALL)
+
+1. HTTP "Authorization" 헤더 필드 (Section 3.5.1)
+2. HTTP 요청 entity-body (Section 3.5.2)
+3. HTTP 요청 URI 쿼리 (Section 3.5.3)
+
+게다가 이 세가지 방법 외에, 후에 확장에서 요청에 프로토콜 파라미터를 포함하는 다른 방법들이 정의될 수 있다. (MAY)
+
+
+
+#### 3.5.1. Authorization Header
+
+프로토콜 파라미터는 [RFC2617]에 정의된 "Authorization" 헤더 필드를 사용하여 "OAuth"로 설정된 auth-scheme name으로 전송될 수 있다.
+
+예시:
+
+```
+Authorization: OAuth realm="Example",
+	oauth_consumer_key="0685bd9184jfhq22",
+    oauth_token="ad180jjd733klru7",
+    oauth_signature_method="HMAC-SHA1",
+    oauth_signature="wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D",
+    oauth_timestamp="137131200",
+    oauth_nonce="4572616e48616d6d65724c61686176",
+    oauth_version="1.0"
+```
+
+프로토콜 파라미터는 다음과 같이 "Authorization" 헤더 필드에 포함되어야 한다(SHALL).
+
+1. 파라미터 name과 value는 파라미터 인코딩(Section 3.6)에 따라 인코딩 된다.
+2. 각 파라미터의 name 뒤에 "=" 문자가 붙고 " " " 문자, 파라미터 value(may be empty), 또 다른 " " " 문자가 붙는다.
+3. 파라미터들은 "," 문자에 의해 분리되며 [RFC2617]에 따라 선형 공백이 OPTIONAL
+4. OPTIONAL "realm" 파라미터는 [RFC2617] section 1.2.에 따라 해석되고 추가될 수 있다.(MAY)
+
+서버는 HTTP 보호된 리소스로의 클라이언트 요청 시 "WWW-Authenticate" 응답 헤더 필드를 응답함으로써 OAuth" auth-scheme(응답 체계)을 위한 그들의 지원을 표시할 수 있다(MAY). [RFC2617]에 따라, 이러한 응답은 추가적인 HTTP "WWW-Authenticate" 헤더들을 포함할 수 있다(MAY).
+
+예시:
+
+WWW-Authenticate: OAuth realm="http://server.example.com"
+
+realm 파라미터는 [RFC2617] Section 1.2에 따라 보안 realm을 정의한다.
+
+#### 3.5.2. Form-Encoded Body
+
