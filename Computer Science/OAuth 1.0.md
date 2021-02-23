@@ -779,3 +779,33 @@ GET /example/path?oauth_consumer_key=0685bd9184jfhq22&oauth_token=ad180jjd733klr
 
 ## 4. Security Considerations
 
+[RFC2617]에 명시된 대로, 가장 큰 위험 소스는 보통 핵심 프로토콜 그 자체에서가 아니라 사용을 둘러싼 정책과 절차에서 발견된다. 구현자가 어떻게 이 프로토콜이 보안 요구사항을 어떻게 해결하는지 평가하는 것을 강력히 권고한다.
+
+### 4.1. RSA-SHA1 Signature Method
+
+"RSA-SHA1" 서명으로 만들어진 보안 요청은 token shared-secret이나 어떤 프로비전된 client shared-secret도 사용하지 않는다. 이건 요청이 클라이언트가 요청을 서명하는데 사용되는 개인키의 비밀에 완전히 의존한다는 것을 의미한다.
+
+### 4.2. Confidentiality of Requests
+
+이 프로토콜은 요청의 무결성을 확인하는 메커니즘을 제공하지만 요청의 기밀성을 보장하지는 않는다. 추가적인 예방 조치를 취하지 않는 한, 도청자는 요청 컨텐츠에 전체 접근 권한을 가질 수 있게 된다. 서버는 각 요청의 일부로써 보내질 가능성이 있는 데이터의 종류를 주의깊게 고려해야 하며 민감한 리소스를 보호하기 위해 전송 계층 보안 메커니즘을 사용해야 한다.
+
+### 4.3. Spoofing by Counterfeit Servers
+
+이 프로토콜은 서버의 신뢰성을 확인하는 시도를 하지 않는다. 적대적인 단체는 이 점에서 클라이언트의 요청을 가로채거나 오해의 소지가 있거나 잘못된 응답을 리턴함으로써 이득을 취할 수 있다. 서비스 제공자는 이 프로토콜을 이용하여 서비스를 개발할 때 이런 공격을 고려해야 하고 서버나 요청의 응답의 신뢰성이 문제가 되는 경우 전송 계층 보안을 요구해야 한다.
+
+### 4.4. Proxying and Caching of Authenticated Content
+
+HTTP 권한 부여 체계(Section 3.5.1)은 optional. 하지만 [RFC2616]은 보호될 수 있도록 인증된 컨텐츠를 구분하기 위해서 "Authorization", "WWW-Authenticate" 헤더 필드에 의존한다. 프록시와 캐시는 특히, 이런 헤더 필드를 사용하지 않은 요청들을 적절하게 보호하는 것이 실패할 수 있다.
+
+예를 들어, 개인 인증 컨텐츠는 공개적으로 접근할 수 있는 캐시에 저장(따라서 검색 가능)될 수 있다. HTTP "Authorization" 헤더 필드를 사용하지 않는 서버는 인증 컨텐츠가 보호되는 것을 확실히 하기 위해 "Cache-Control" 헤더 필드와 같은 다른 메커니즘들을 사용해야 한다.
+
+### 4.5. Plaintext Storage of Credentials
+
+client shared-secret, token shared-secret 함수는 기존 인증 시스템에서의 패스워드와 같은 방식으로 동작한다. "RSA-SHA1" 이외의 메소드에서 사용되는 서명을 계산하기 위해, 서버는 plaintext 형식으로 이 secrets에 접근할 수 있어야 한다.  예를들어 유저 credentials의 단방향 해시만을 저장하는 현대의 운영체제와는 대조적이다.
+
+만약 공격자가 이런 secrets의 접근 권한을, 또는 더 나쁘게, 이러한 모든 secrets의 서버의 데이터베이스로의 접근 권한을 얻게된다면 공격자는 어떤 리소스 소유자 대신에 어떤 액션도 취할 수 있게된다. 따라서 서버가 비인가 접근으로부터 이런 secrets를 보고하는 것은 중요하다.
+
+### 4.6. Secrecy of the Client Credentials
+
+
+
