@@ -19,3 +19,24 @@
 Springboot 2.0.5 이상 버전 사용 시 `LocalValidatorFactoryBean`을 자동 등록
 
 Validation Annotation 사용, 복잡한 로직이 필요하면 Validator 구현
+
+
+
+## Example
+
+```java
+@Autowired
+EventValidator eventValidator;
+
+@PostMapping
+public ResponseEntity createTodo(@RequestBody @Valid TodoDto todoDto,
+                                 Errors errors
+                                ){
+    if(errors.hasErrors()) return badRequest(errors);
+    eventValidator.validate(todoDto, errors);
+    if(errors.hasErrors()) return badRequest(errors);
+    
+    // ...
+}
+```
+
