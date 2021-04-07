@@ -1,5 +1,9 @@
 # Bean
 
+## 1. Instantiating Beans
+
+
+
 ## Scope
 
 대부분의 경우 Singleton scope를 사용하겠지만..
