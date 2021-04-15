@@ -94,7 +94,7 @@
 >
 > 그럼에도 GC는 삭제된 캐시의 키를 가비지로 인식하지 못한다.
 >
-> 이는 캐시에 넣어준 데이터가 String Reference로 독자적인 Reachability를 가지기 때문
+> 이는 캐시에 넣어준 데이터가 Strong Reference로 독자적인 Reachability를 가지기 때문
 >
 > 따라서 캐시에 데이터를 넣어줄 때 원래 데이터에 Weak Reference를 넣어준다면 이러한 문제를 방지할 수 있다.
 >
